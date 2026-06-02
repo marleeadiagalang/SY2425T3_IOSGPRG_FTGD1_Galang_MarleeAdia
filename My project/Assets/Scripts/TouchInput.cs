@@ -5,7 +5,20 @@ using System;
 
 public class TouchInput : MonoBehaviour
 {
+    public enum InputState
+    {
+        None,
+        Up,
+        Right,
+        Down,
+        Left
+        
+    }
+
+    public static event Action<InputState> OnSwipeDetected;
+
     [SerializeField] private PlayerInput _playerInput;
+    [SerializeField] private float _swipeThreshold = 50f;
 
     private InputAction _touchPressedAction;
     private InputAction _touchPositionAction;
