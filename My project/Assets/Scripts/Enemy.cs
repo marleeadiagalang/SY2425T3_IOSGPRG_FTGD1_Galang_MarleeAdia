@@ -5,10 +5,18 @@ using UnityEngine;
 public class Enemy : MonoBehaviour
 {
 
-    [SerializedField] public TouchInput.InputState RequiredDirection;
+    [SerializeField] private TouchInput.InputState RequiredDirection;
 
     private bool isActive = false;
 
+    public void Instanstiate()
+    {
+        isActive = true;
+
+        TouchInput.OnSwipeDetected += CheckPlayerInput;
+
+        SetRandomDirection();
+    }
 
     private void OnEnable()
     {
