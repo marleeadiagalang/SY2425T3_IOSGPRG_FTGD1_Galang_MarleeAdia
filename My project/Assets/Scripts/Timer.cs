@@ -39,7 +39,7 @@ public class Timer : MonoBehaviour
         while (true)
         {
             currentTime += Time.deltaTime;
-            Debug.Log($"Spawn timer: {currentTime}");
+            // Debug.Log($"Spawn timer: {currentTime}");
             if (currentTime >= seconds)
             {
                 Spawner.Instance.SpawnEnemy();

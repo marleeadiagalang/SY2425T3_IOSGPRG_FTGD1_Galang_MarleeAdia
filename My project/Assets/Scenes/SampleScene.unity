@@ -552,7 +552,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _playerInput: {fileID: 613877496}
-  _swipeThreshold: 50
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0

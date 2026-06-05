@@ -5,20 +5,15 @@ using System;
 
 public class TouchInput : MonoBehaviour
 {
-    public enum InputState
+    public enum SwipeDirection
     {
-        None,
         Up,
         Right,
         Down,
         Left
         
     }
-
-    public static event Action<InputState> OnSwipeDetected;
-
     [SerializeField] private PlayerInput _playerInput;
-    [SerializeField] private float _swipeThreshold = 50f;
 
     private InputAction _touchPressedAction;
     private InputAction _touchPositionAction;
@@ -28,6 +23,11 @@ public class TouchInput : MonoBehaviour
 
     private void Awake()
     {
+        if (_playerInput == null)
+        {
+            Debug.LogError("PlayerInput is not assigned to TouchInput");
+            return;
+        }
         _touchPressedAction = _playerInput.actions["TouchPress"];
         _touchPositionAction = _playerInput.actions["TouchPosition"];
     }
@@ -36,34 +36,66 @@ public class TouchInput : MonoBehaviour
     {
         _touchPressedAction.started += OnTouchStarted;
         _touchPressedAction.canceled += OnTouchReleased;
-        Debug.Log("Touch input enabled.");
     }
-
 
     private void OnDisable()
     {
-        _touchPressedAction.started -= OnTouchStarted;
-        _touchPressedAction.canceled -= OnTouchReleased;
-        Debug.Log("Touch input disabled.");
+        if (_touchPressedAction != null)
+        {
+            _touchPressedAction.started -= OnTouchStarted;
+            _touchPressedAction.canceled -= OnTouchReleased;
+        }
+       
+        
     }
 
     private void OnTouchStarted(InputAction.CallbackContext context)
     {
         _touchStart = _touchPositionAction.ReadValue<Vector2>();
-        
     }
+
 
     private void OnTouchReleased(InputAction.CallbackContext context)
     {
         _touchEnd = _touchPositionAction.ReadValue<Vector2>();
-        
-        if (_touchEnd.x < _touchStart.x)
+
+        SwipeDirection direction = GetSwipeDirection();
+
+        Debug.Log($"Player Swiped {direction}");
+
+        CheckEnemy(direction);
+    }
+
+    private SwipeDirection GetSwipeDirection()
+    {
+        Vector2 swipe = _touchEnd - _touchStart;
+
+        if (Mathf.Abs(swipe.x) > Mathf.Abs(swipe.y))
         {
-            Debug.Log("Swiped left");
+            return swipe.x > 0 ? SwipeDirection.Right : SwipeDirection.Left;
         }
-        else if (_touchEnd.x > _touchStart.x)
+
+        return swipe.y > 0 ? SwipeDirection.Up : SwipeDirection.Down;
+    }
+
+    private void CheckEnemy(SwipeDirection playerSwipe)
+    {
+        Enemy enemy = Spawner.Instance.GetFrontEnemy();
+
+        if (enemy == null)
         {
-            Debug.Log("Swiped right");
+            return;
+        }
+
+        if (enemy.requiredDirection == playerSwipe)
+        {
+            enemy.Kill();
+            Debug.Log("Enemy Killed");
+        }
+        else
+        {
+            Debug.Log("Wrong Swipe");
         }
     }
+
 }

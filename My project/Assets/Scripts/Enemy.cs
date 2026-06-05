@@ -5,56 +5,29 @@ using UnityEngine;
 public class Enemy : MonoBehaviour
 {
 
-    [SerializeField] private TouchInput.InputState RequiredDirection;
-
-    private bool isActive = false;
-
-    public void Instanstiate()
-    {
-        isActive = true;
-
-        TouchInput.OnSwipeDetected += CheckPlayerInput;
-
-        SetRandomDirection();
-    }
-
-    private void OnEnable()
-    {
-        TouchInput.OnSwipeDetected += CheckPlayerInput;
-        SetRandomDirection();
-    }
-
-    private void OnDisable()
-    {
-        TouchInput.OnSwipeDetected -= CheckPlayerInput;
-    }
-
-    public void SetRandomDirection()
-    {
-        RequiredDirection = (TouchInput.InputState)Random.Range(1, 5);
-        Debug.Log("Enemy spawned with direction: " + RequiredDirection);
-    }
-
-    private void CheckPlayerInput(TouchInput.InputState inputState)
-    {
-        if (inputState == RequiredDirection)
-        {
-            Spawner.Instance.RemoveEnemyFromList(this);
-            Destroy(gameObject);
-            Debug.Log("Destroyed");
-        }
-    }
-
+    public TouchInput.SwipeDirection requiredDirection;
 
     [SerializeField] private int _health;
     [SerializeField] private int _speed;
 
-
-
+ 
 
     public void Initialize()
     {
         _health = Random.Range(1, 100);
         _speed = Random.Range(1, 10);
+
+        requiredDirection = (TouchInput.SwipeDirection)Random.Range(0, 4);
+          
+    }
+
+
+    public void Kill()
+    {
+        Spawner.Instance.RemoveEnemyFromList(this);
+
+        Debug.Log("Enemy Killd");
+
+        Destroy(gameObject);
     }
 }

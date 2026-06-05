@@ -4,19 +4,35 @@ using UnityEngine;
 
 public class Spawner : Singleton<Spawner>
 {
+
+
     [SerializeField] private GameObject _enemyPrefab;
     [SerializeField] private GameObject _spawnLocation;
 
     private List<GameObject> _enemies = new List<GameObject>();
+
+    public Enemy GetFrontEnemy()
+    {
+        if (_enemies.Count == 0)
+        {
+            return null;
+        }
+        return _enemies[0].GetComponent<Enemy>();
+    }
 
     public void SpawnEnemy()
     {
         GameObject enemy = Instantiate(_enemyPrefab, _spawnLocation.transform.position, Quaternion.identity);
 
         Enemy enemyScript = enemy.GetComponent<Enemy>();
+
         enemyScript.Initialize();
 
+
+        enemyScript.requiredDirection = (TouchInput.SwipeDirection)Random.Range(0, 4);
+
         _enemies.Add(enemy);
+        Debug.Log($"Enemy swipe: {enemyScript.requiredDirection}"); 
     }
 
     public void RemoveEnemyFromList(Enemy enemy)
